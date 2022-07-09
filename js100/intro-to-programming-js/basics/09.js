@@ -1,0 +1,25 @@
+// Launch School, Introduction to Programming with JavaScript
+// Introduction to Programming / The Basics / Exercise 09
+
+/**
+ * 09. Create an object named pets that contains a list of pet names and the
+ *     type of animal. For instance:
+ * 
+ *     Name	         Animal
+ *     --------------------
+ *     asta	         dog
+ *     butterscotch	 cat
+ *     pudding	     cat
+ *     neptune	     fish
+ *     darwin	       lizard
+ * 
+ *     You can use that data or make up your own.
+ */
+
+const pets = {
+  asta: 'dog',
+  butterscotch: 'cat',
+  pudding: 'cat',
+  neptune: 'fish',
+  darwin: 'lizard'
+}
