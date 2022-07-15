@@ -1,0 +1,16 @@
+// Launch School, JS100 - Javascript Basics
+// Functions 1 / Exercise 01 / Sum
+
+/**
+ * 01. Examine the example function invocation below. Write the function sum,
+ *     such that it accepts two arguments and returns the sum of its arguments.
+ *     You may assume that the function arguments will always be numbers.
+ *     
+ *     sum(22, 10); // 32
+ */
+
+function sum(num1, num2) {
+  return num1 + num2;
+}
+
+console.log(sum(22, 10));
