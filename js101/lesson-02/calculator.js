@@ -6,7 +6,8 @@
 // Ask they user if they want to perform another calculation.
 // Start a new calculation if the user says yes (repeat flowchart).
 
-const rlSync = require('readline-sync');
+const rlSync   = require('readline-sync');
+const MESSAGES = require('./calculator_messages.json');
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -20,7 +21,7 @@ function getNumberFromUser() {
   let number = rlSync.question();
 
   while (invalidNumber(number)) {
-    prompt("Hmm... that doesn't look like a valid number.");
+    prompt(MESSAGES.invalidNumberWarning);
     number = rlSync.question();
   }
 
@@ -31,7 +32,7 @@ function getOperationFromUser() {
   let operation = rlSync.question();
 
   while (!['1', '2', '3', '4'].includes(operation)) {
-    prompt('Must choose 1, 2, 3, or 4');
+    prompt(MESSAGES.invalidOperationWarning);
     operation = rlSync.question();
   }
 
@@ -42,7 +43,7 @@ function getRepeatFromUser() {
   let repeat = rlSync.question();
 
   while (!['1', '2'].includes(repeat)) {
-    prompt('Must choose 1 or 2');
+    prompt(MESSAGES.invalidRepeatWarning);
     repeat = rlSync.question();
   }
 
@@ -51,15 +52,14 @@ function getRepeatFromUser() {
 
 while (true) {
   console.clear();
-  prompt('Welcome to Calculator!');
-  prompt("What's the first number?");
+  prompt(MESSAGES.welcome);
+  prompt(MESSAGES.getFirstNumber);
   let number1 = getNumberFromUser();
 
-  prompt("What's the second number?");
+  prompt(MESSAGES.getSecondNumber);
   let number2 = getNumberFromUser();
 
-  prompt('What operation would you like to perform?\n' +
-        '   1) Add 2) Subtract 3) Multiply 4) Divide');
+  prompt(MESSAGES.getOperation);
   let operation = getOperationFromUser();
 
   let output;
@@ -78,12 +78,11 @@ while (true) {
       break;
   }
 
-  prompt(`The result is: ${output}`);
-  prompt('Would you like to perform another calculation?\n' +
-         '   1) Yes 2) No');
+  prompt(`${MESSAGES.resultPrefix} ${output}`);
+  prompt(MESSAGES.getCalculationRepeat);
   let repeatCalc = getRepeatFromUser();
 
   if (!repeatCalc) break;
 }
 
-prompt('Goodbye - calculator closing!');
+prompt(MESSAGES.goodbye);
