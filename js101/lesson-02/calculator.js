@@ -8,6 +8,11 @@
 
 const rlSync   = require('readline-sync');
 const MESSAGES = require('./calculator_messages.json');
+const LANGCODE = 'en';
+
+function messages(message, langCode = 'en') {
+  return MESSAGES[langCode][message];
+}
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -21,7 +26,7 @@ function getNumberFromUser() {
   let number = rlSync.question();
 
   while (invalidNumber(number)) {
-    prompt(MESSAGES.invalidNumberWarning);
+    prompt(messages("invalidNumberWarning", LANGCODE));
     number = rlSync.question();
   }
 
@@ -32,7 +37,7 @@ function getOperationFromUser() {
   let operation = rlSync.question();
 
   while (!['1', '2', '3', '4'].includes(operation)) {
-    prompt(MESSAGES.invalidOperationWarning);
+    prompt(messages("invalidOperationWarning", LANGCODE));
     operation = rlSync.question();
   }
 
@@ -43,7 +48,7 @@ function getRepeatFromUser() {
   let repeat = rlSync.question();
 
   while (!['1', '2'].includes(repeat)) {
-    prompt(MESSAGES.invalidRepeatWarning);
+    prompt(messages("invalidRepeatWarning", LANGCODE));
     repeat = rlSync.question();
   }
 
@@ -52,14 +57,14 @@ function getRepeatFromUser() {
 
 while (true) {
   console.clear();
-  prompt(MESSAGES.welcome);
-  prompt(MESSAGES.getFirstNumber);
+  prompt(messages("welcome", LANGCODE));
+  prompt(messages("getFirstNumber", LANGCODE));
   let number1 = getNumberFromUser();
 
-  prompt(MESSAGES.getSecondNumber);
+  prompt(messages("getSecondNumber", LANGCODE));
   let number2 = getNumberFromUser();
 
-  prompt(MESSAGES.getOperation);
+  prompt(messages("getOperation", LANGCODE));
   let operation = getOperationFromUser();
 
   let output;
@@ -78,11 +83,11 @@ while (true) {
       break;
   }
 
-  prompt(`${MESSAGES.resultPrefix} ${output}`);
-  prompt(MESSAGES.getCalculationRepeat);
+  prompt(`${messages("resultPrefix", LANGCODE)} ${output}`);
+  prompt(messages("getCalculationRepeat", LANGCODE));
   let repeatCalc = getRepeatFromUser();
 
   if (!repeatCalc) break;
 }
 
-prompt(MESSAGES.goodbye);
+prompt(messages("goodbye", LANGCODE));

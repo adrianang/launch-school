@@ -1,12 +1,38 @@
 {
-  "welcome": "Welcome to Calculator!",
-  "getFirstNumber": "What's the first number?",
-  "getSecondNumber": "What's the second number?",
-  "getOperation": "What operation would you like to perform?\n   1) Add 2) Subtract 3) Multiply 4) Divide",
-  "resultPrefix": "The result is:",
-  "getCalculationRepeat": "Would you like to perform another calculation?\n   1) Yes 2) No",
-  "goodbye": "Goodbye - calculator closing!",
-  "invalidNumberWarning": "Hmm... that doesn't look like a valid number.",
-  "invalidOperationWarning": "Must choose 1, 2, 3, or 4",
-  "invalidRepeatWarning": "Must choose 1 or 2"
+  "en": {
+    "welcome": "Welcome to Calculator!",
+    "getFirstNumber": "What's the first number?",
+    "getSecondNumber": "What's the second number?",
+    "getOperation": "What operation would you like to perform?\n   1) Add 2) Subtract 3) Multiply 4) Divide",
+    "resultPrefix": "The result is:",
+    "getCalculationRepeat": "Would you like to perform another calculation?\n   1) Yes 2) No",
+    "goodbye": "Goodbye - calculator closing!",
+    "invalidNumberWarning": "Hmm... that doesn't look like a valid number.",
+    "invalidOperationWarning": "Must choose 1, 2, 3, or 4",
+    "invalidRepeatWarning": "Must choose 1 or 2"
+  },
+  "zh": {
+    "welcome": "(Mandarin) Welcome to Calculator!",
+    "getFirstNumber": "(Mandarin) What's the first number?",
+    "getSecondNumber": "(Mandarin) What's the second number?",
+    "getOperation": "(Mandarin) What operation would you like to perform?\n   1) Add 2) Subtract 3) Multiply 4) Divide",
+    "resultPrefix": "(Mandarin) The result is:",
+    "getCalculationRepeat": "(Mandarin) Would you like to perform another calculation?\n   1) Yes 2) No",
+    "goodbye": "(Mandarin) Goodbye - calculator closing!",
+    "invalidNumberWarning": "(Mandarin) Hmm... that doesn't look like a valid number.",
+    "invalidOperationWarning": "(Mandarin) Must choose 1, 2, 3, or 4",
+    "invalidRepeatWarning": "(Mandarin) Must choose 1 or 2"
+  },
+  "hi": {
+    "welcome": "(Hindi) Welcome to Calculator!",
+    "getFirstNumber": "(Hindi) What's the first number?",
+    "getSecondNumber": "(Hindi) What's the second number?",
+    "getOperation": "(Hindi) What operation would you like to perform?\n   1) Add 2) Subtract 3) Multiply 4) Divide",
+    "resultPrefix": "(Hindi) The result is:",
+    "getCalculationRepeat": "(Hindi) Would you like to perform another calculation?\n   1) Yes 2) No",
+    "goodbye": "(Hindi) Goodbye - calculator closing!",
+    "invalidNumberWarning": "(Hindi) Hmm... that doesn't look like a valid number.",
+    "invalidOperationWarning": "(Hindi) Must choose 1, 2, 3, or 4",
+    "invalidRepeatWarning": "(Hindi) Must choose 1 or 2"
+  }
 }
