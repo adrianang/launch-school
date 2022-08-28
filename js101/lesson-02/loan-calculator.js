@@ -1,4 +1,5 @@
-const rlSync = require('readline-sync');
+const rlSync   = require('readline-sync');
+let repeatCalc = true;
 let monthlyPayment;
 
 function prompt(message) {
@@ -20,11 +21,11 @@ function getLoanAmountFromUser() {
 }
 
 function getAPRFromUser() {
-  prompt(`What is the annual percentage rate (APR) of your loan? (Enter in %)`);
+  prompt(`What is the annual percentage rate (APR) of your loan? (Enter in % - ex: 5 for 5%, 2 for 2.5%)`);
   let annualPercentageRate = rlSync.question();
 
   while (invalidNumericInput(annualPercentageRate)) {
-    prompt(`That doesn't seem to be a valid rate. Please enter a rate larger than 0. (Enter in %)`);
+    prompt(`That doesn't seem to be a valid rate. Please enter a rate larger than 0. (Enter in % - ex: 5 for 5%, 2 for 2.5%)`);
     annualPercentageRate = rlSync.question();
   }
 
@@ -43,25 +44,44 @@ function getLoanDurationFromUser() {
   return Number(loanDurationInYears);
 }
 
+function getRepeatFromUser() {
+  prompt('Would you like to calculate the monthly payment for another loan?\n   (1) Yes (2) No');
+  let repeat = rlSync.question();
+
+  while (!['1', '2'].includes(repeat)) {
+    prompt(`That doesn't seem to be a valid response. Please enter 1 to calculate again, or 2 to quit.`);
+    repeat = rlSync.question();
+  }
+
+  return repeat === '1';
+}
+
 function invalidNumericInput(numInput) {
   return numInput.trimStart() === '' || Number.isNaN(Number(numInput)) || !(Number(numInput) > 0);
 }
 
-function calculateMonthlyPayment(loanAmt, monthlyIntRate, loanDurationInMo) {
+function calculateMonthlyPayment(loanAmt, monthlyIntRate, loanDurationMonths) {
   monthlyPayment = loanAmt *
                    (monthlyIntRate /
-                   (1 - Math.pow((1 + monthlyIntRate), (-loanDurationInMo))));
+                   (1 - Math.pow((1 + monthlyIntRate), (-loanDurationMonths))));
 
   return monthlyPayment;
 }
 
-console.clear();
-prompt('Welcome to Loan Calculator!');
-let loanAmount = getLoanAmountFromUser();
-let annualPercentageRate = getAPRFromUser();
-let loanDurationInYears = getLoanDurationFromUser();
-let monthlyInterestRate = annualPercentageRate / 12;
-let loanDurationInMonths = loanDurationInYears * 12;
-calculateMonthlyPayment(loanAmount, monthlyInterestRate, loanDurationInMonths);
-prompt(`Your monthly payment for a loan of $${loanAmount} with an APR of ${annualPercentageRate * 100}% for ${loanDurationInYears} years is:`);
-prompt(`$${monthlyPayment.toFixed(2)}`);
+do {
+  console.clear();
+  prompt('Welcome to Loan Calculator!');
+  let loanAmount = getLoanAmountFromUser();
+  let annualPercentageRate = getAPRFromUser();
+  let loanDurationYears = getLoanDurationFromUser();
+  let monthlyInterestRate = annualPercentageRate / 12;
+  let loanDurationMonths = loanDurationYears * 12;
+  calculateMonthlyPayment(loanAmount, monthlyInterestRate, loanDurationMonths);
+
+  prompt(`Your monthly payment for a loan of $${loanAmount} with an APR of ${annualPercentageRate * 100}% for ${loanDurationYears} years is:`);
+  prompt(`$${monthlyPayment.toFixed(2)}`);
+
+  repeatCalc = getRepeatFromUser();
+} while (repeatCalc);
+
+prompt('Goodbye - calculator closing...');
