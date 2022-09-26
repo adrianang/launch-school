@@ -1,5 +1,6 @@
 const rlSync = require('readline-sync');
 const VALID_CHOICES = ['rock', 'paper', 'scissors', 'spock', 'lizard'];
+const SHORTENED_VALID_CHOICES = ['r', 'p', 'sc', 'sp', 'l'];
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -35,11 +36,21 @@ function displayWinner(choice, computerChoice) {
   }
 }
 
+function parseShortenedChoice(shortChoice, mainChoicesArr) {
+  let intendedChoice;
+
+  mainChoicesArr.forEach(mainChoice => {
+    if (mainChoice.indexOf(shortChoice) === 0) intendedChoice = mainChoice;
+  });
+
+  return intendedChoice;
+}
+
 while (true) {
   prompt(`Choose one: ${VALID_CHOICES.join(', ')}`);
   let choice = rlSync.question();
 
-  while (!VALID_CHOICES.includes(choice)) {
+  while (![...VALID_CHOICES, ...SHORTENED_VALID_CHOICES].includes(choice)) {
     prompt("That's not a valid choice");
     choice = rlSync.question();
   }
@@ -47,6 +58,7 @@ while (true) {
   let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
   let computerChoice = VALID_CHOICES[randomIndex];
 
+  if (choice.length < 3) choice = parseShortenedChoice(choice, VALID_CHOICES);
   displayWinner(choice, computerChoice);
 
   prompt('Do you want to play again (y/n)?');
