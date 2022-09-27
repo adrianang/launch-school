@@ -6,6 +6,28 @@ const MATCH_SCORE = {
   computer: 0,
   grandWinner: null
 };
+const GAME_RULES = {
+  rock: {
+    winsAgainst:  ['scissors', 'lizard'],
+    losesAgainst: ['paper', 'spock'],
+  },
+  paper: {
+    winsAgainst:  ['rock', 'spock'],
+    losesAgainst: ['scissors', 'lizard']
+  },
+  scissors: {
+    winsAgainst:  ['paper', 'lizard'],
+    losesAgainst: ['rock', 'spock']
+  },
+  lizard: {
+    winsAgainst:  ['spock', 'paper'],
+    losesAgainst: ['rock', 'scissors']
+  },
+  spock: {
+    winsAgainst:  ['scissors', 'rock'],
+    losesAgainst: ['lizard', 'paper']
+  }
+};
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -27,28 +49,10 @@ function displayWinner(choice, computerChoice) {
 function determineWinner(choice, computerChoice) {
   let winner;
 
-  if ((choice === 'rock' && computerChoice === 'scissors') ||
-    (choice === 'paper' && computerChoice === 'rock') ||
-    (choice === 'scissors' && computerChoice === 'paper') ||
-    (choice === 'rock' && computerChoice === 'lizard') ||
-    (choice === 'lizard' && computerChoice === 'spock') ||
-    (choice === 'spock' && computerChoice === 'scissors') ||
-    (choice === 'scissors' && computerChoice === 'lizard') ||
-    (choice === 'lizard' && computerChoice === 'paper') ||
-    (choice === 'paper' && computerChoice === 'spock') ||
-    (choice === 'spock' && computerChoice === 'rock')) {
+  if (GAME_RULES[choice].winsAgainst.includes(computerChoice)) {
     winner = 'user';
     MATCH_SCORE.user += 1;
-  } else if ((choice === 'rock' && computerChoice === 'paper') ||
-    (choice === 'paper' && computerChoice === 'scissors') ||
-    (choice === 'scissors' && computerChoice === 'rock') ||
-    (choice === 'lizard' && computerChoice === 'rock') ||
-    (choice === 'spock' && computerChoice === 'lizard') ||
-    (choice === 'scissors' && computerChoice === 'spock') ||
-    (choice === 'lizard' && computerChoice === 'scissors') ||
-    (choice === 'paper' && computerChoice === 'lizard') ||
-    (choice === 'spock' && computerChoice === 'paper') ||
-    (choice === 'rock' && computerChoice === 'spock')) {
+  } else if (GAME_RULES[choice].losesAgainst.includes(computerChoice)) {
     winner = 'computer';
     MATCH_SCORE.computer += 1;
   }
