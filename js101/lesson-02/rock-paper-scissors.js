@@ -1,10 +1,15 @@
 const rlSync = require('readline-sync');
-const VALID_CHOICES = ['rock', 'paper', 'scissors', 'spock', 'lizard'];
-const SHORTENED_VALID_CHOICES = ['r', 'p', 'sc', 'sp', 'l'];
+const VALID_CHOICES = {
+  full:  ['rock', 'paper', 'scissors', 'spock', 'lizard'],
+  short: ['r', 'p', 'sc', 'sp', 'l']
+};
+const SCORE_TO_WIN = 3;
+const MAX_LENGTH_OF_SHORT_CHOICE =
+  VALID_CHOICES.short.map(choice => choice.length).sort((a, b) => b - a)[0];
 const MATCH_SCORE = {
   user: 0,
   computer: 0,
-  grandWinner: null
+  grandWinner: null,
 };
 const GAME_RULES = {
   rock: {
@@ -28,13 +33,55 @@ const GAME_RULES = {
     losesAgainst: ['lizard', 'paper']
   }
 };
+let rematchGame = true;
 
 function prompt(message) {
   console.log(`=> ${message}`);
 }
 
+function displayIntroduction() {
+  console.log(`=== Welcome to Rock, Paper, Scissors (& Spock & Lizard)! ====
+
+    RULES: SCISSORS cuts PAPER covers ROCK crushes
+           LIZARD poisons SPOCK smashes SCISSORS
+           decapitates LIZARD eats PAPER disproves
+           SPOCK vaporizes ROCK crushes SCISSORS.
+
+         - First player to score ${SCORE_TO_WIN} is the 👑 GRAND WINNER 👑!
+
+         - Instead of typing your entire move, you can type:
+           'r'  for ROCK
+           'p'  for PAPER
+           'sc' for SCISSORS
+           'sp' for SPOCK
+           'l'  for LIZARD
+
+    ========================================================\n`);
+}
+
+function getMoveFromUser() {
+  prompt(`Choose one: ${VALID_CHOICES.full.join(', ')}`);
+  let choice = rlSync.question('   ').toLowerCase();
+
+  while (![...VALID_CHOICES.full, ...VALID_CHOICES.short].includes(choice)) {
+    prompt("That's not a valid choice!");
+    choice = rlSync.question('   ');
+  }
+
+  if (choice.length <= MAX_LENGTH_OF_SHORT_CHOICE) {
+    choice = parseShortenedChoice(choice);
+  }
+
+  return choice;
+}
+
+function getMoveFromComputer() {
+  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.full.length);
+  return VALID_CHOICES.full[randomIndex];
+}
+
 function displayWinner(choice, computerChoice) {
-  prompt(`You chose ${choice}, computer chose ${computerChoice}`);
+  prompt(`You chose ${choice}, computer chose ${computerChoice}.`);
   let winner = determineWinner(choice, computerChoice);
 
   if (winner === 'user') {
@@ -60,10 +107,17 @@ function determineWinner(choice, computerChoice) {
   return winner;
 }
 
+function displayGrandWinner() {
+  if (MATCH_SCORE.grandWinner) {
+    prompt(`The grand winner is: ${MATCH_SCORE.grandWinner}! 👑`);
+    resetScore();
+  }
+}
+
 function determineGrandWinner() {
-  if (MATCH_SCORE.user === 3) {
+  if (MATCH_SCORE.user === SCORE_TO_WIN) {
     MATCH_SCORE.grandWinner = 'You';
-  } else if (MATCH_SCORE.computer === 3) {
+  } else if (MATCH_SCORE.computer === SCORE_TO_WIN) {
     MATCH_SCORE.grandWinner = 'Computer';
   }
 }
@@ -78,43 +132,42 @@ function resetScore() {
   MATCH_SCORE.grandWinner = null;
 }
 
-function parseShortenedChoice(shortChoice, mainChoicesArr) {
+function parseShortenedChoice(shortChoice) {
   let intendedChoice;
 
-  mainChoicesArr.forEach(mainChoice => {
-    if (mainChoice.indexOf(shortChoice) === 0) intendedChoice = mainChoice;
+  VALID_CHOICES.full.forEach(validChoice => {
+    if (validChoice.indexOf(shortChoice) === 0) intendedChoice = validChoice;
   });
 
   return intendedChoice;
 }
 
-while (true) {
-  prompt(`Choose one: ${VALID_CHOICES.join(', ')}`);
-  let choice = rlSync.question();
-
-  while (![...VALID_CHOICES, ...SHORTENED_VALID_CHOICES].includes(choice)) {
-    prompt("That's not a valid choice");
-    choice = rlSync.question();
-  }
-
-  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-  let computerChoice = VALID_CHOICES[randomIndex];
-
-  if (choice.length < 3) choice = parseShortenedChoice(choice, VALID_CHOICES);
-  displayWinner(choice, computerChoice);
-  displayScore(MATCH_SCORE);
-  determineGrandWinner();
-  if (MATCH_SCORE.grandWinner) {
-    prompt(`The grand winner is: ${MATCH_SCORE.grandWinner}!`);
-    resetScore();
-  }
-
+function askRematchFromUser() {
   prompt('Do you want to play again (y/n)?');
-  let answer = rlSync.question().toLowerCase();
-  while (answer[0] !== 'n' && answer[0] !== 'y') {
+  let answer = rlSync.question('   ').toLowerCase();
+
+  while (!['y', 'n'].includes(answer)) {
     prompt('Please enter "y" or "n".');
-    answer = rlSync.question().toLowerCase();
+    answer = rlSync.question('   ').toLowerCase();
   }
 
-  if (answer[0] !== 'y') break;
+  return answer === 'y';
 }
+
+console.clear();
+displayIntroduction();
+
+do {
+  let choice = getMoveFromUser();
+  let computerChoice = getMoveFromComputer();
+
+  displayWinner(choice, computerChoice);
+  displayScore();
+  determineGrandWinner();
+  displayGrandWinner();
+
+  rematchGame = askRematchFromUser();
+  console.clear();
+} while (rematchGame);
+
+prompt('Thanks for playing Rock, Paper, Scissors (& Spock & Lizard)!');
