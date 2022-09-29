@@ -1,38 +1,40 @@
 const rlSync = require('readline-sync');
-const VALID_CHOICES = {
-  full:  ['rock', 'paper', 'scissors', 'spock', 'lizard'],
-  short: ['r', 'p', 'sc', 'sp', 'l']
+const GAME = {
+  validChoices: {
+    full:  ['rock', 'paper', 'scissors', 'spock', 'lizard'],
+    short: ['r', 'p', 'sc', 'sp', 'l']
+  },
+  rules: {
+    rock: {
+      winsAgainst:  ['scissors', 'lizard'],
+      losesAgainst: ['paper', 'spock'],
+    },
+    paper: {
+      winsAgainst:  ['rock', 'spock'],
+      losesAgainst: ['scissors', 'lizard']
+    },
+    scissors: {
+      winsAgainst:  ['paper', 'lizard'],
+      losesAgainst: ['rock', 'spock']
+    },
+    lizard: {
+      winsAgainst:  ['spock', 'paper'],
+      losesAgainst: ['rock', 'scissors']
+    },
+    spock: {
+      winsAgainst:  ['scissors', 'rock'],
+      losesAgainst: ['lizard', 'paper']
+    }
+  },
+  score: {
+    user: 0,
+    computer: 0
+  },
+  grandWinner: null
 };
 const SCORE_TO_WIN = 3;
 const MAX_LENGTH_OF_SHORT_CHOICE =
-  VALID_CHOICES.short.map(choice => choice.length).sort((a, b) => b - a)[0];
-const MATCH_SCORE = {
-  user: 0,
-  computer: 0,
-  grandWinner: null,
-};
-const GAME_RULES = {
-  rock: {
-    winsAgainst:  ['scissors', 'lizard'],
-    losesAgainst: ['paper', 'spock'],
-  },
-  paper: {
-    winsAgainst:  ['rock', 'spock'],
-    losesAgainst: ['scissors', 'lizard']
-  },
-  scissors: {
-    winsAgainst:  ['paper', 'lizard'],
-    losesAgainst: ['rock', 'spock']
-  },
-  lizard: {
-    winsAgainst:  ['spock', 'paper'],
-    losesAgainst: ['rock', 'scissors']
-  },
-  spock: {
-    winsAgainst:  ['scissors', 'rock'],
-    losesAgainst: ['lizard', 'paper']
-  }
-};
+  GAME.validChoices.short.map(choice => choice.length).sort((a, b) => b - a)[0];
 let rematchGame = true;
 
 function prompt(message) {
@@ -60,12 +62,12 @@ function displayIntroduction() {
 }
 
 function getMoveFromUser() {
-  prompt(`Choose one: ${VALID_CHOICES.full.join(', ')}`);
+  prompt(`Choose one: ${GAME.validChoices.full.join(', ')}`);
   let choice = rlSync.question('   ').toLowerCase();
 
-  while (![...VALID_CHOICES.full, ...VALID_CHOICES.short].includes(choice)) {
+  while (!Object.values(GAME.validChoices).flat().includes(choice)) {
     prompt("That's not a valid choice!");
-    choice = rlSync.question('   ');
+    choice = rlSync.question('   ').toLowerCase();
   }
 
   if (choice.length <= MAX_LENGTH_OF_SHORT_CHOICE) {
@@ -76,8 +78,8 @@ function getMoveFromUser() {
 }
 
 function getMoveFromComputer() {
-  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.full.length);
-  return VALID_CHOICES.full[randomIndex];
+  let randomIndex = Math.floor(Math.random() * GAME.validChoices.full.length);
+  return GAME.validChoices.full[randomIndex];
 }
 
 function displayWinner(choice, computerChoice) {
@@ -96,46 +98,48 @@ function displayWinner(choice, computerChoice) {
 function determineWinner(choice, computerChoice) {
   let winner;
 
-  if (GAME_RULES[choice].winsAgainst.includes(computerChoice)) {
+  if (GAME.rules[choice].winsAgainst.includes(computerChoice)) {
     winner = 'user';
-    MATCH_SCORE.user += 1;
-  } else if (GAME_RULES[choice].losesAgainst.includes(computerChoice)) {
+    GAME.score.user += 1;
+  } else if (GAME.rules[choice].losesAgainst.includes(computerChoice)) {
     winner = 'computer';
-    MATCH_SCORE.computer += 1;
+    GAME.score.computer += 1;
   }
 
   return winner;
 }
 
 function displayGrandWinner() {
-  if (MATCH_SCORE.grandWinner) {
-    prompt(`The grand winner is: ${MATCH_SCORE.grandWinner}! 👑`);
+  if (GAME.grandWinner) {
+    prompt(`The grand winner is: ${GAME.grandWinner}! 👑`);
     resetScore();
   }
 }
 
 function determineGrandWinner() {
-  if (MATCH_SCORE.user === SCORE_TO_WIN) {
-    MATCH_SCORE.grandWinner = 'You';
-  } else if (MATCH_SCORE.computer === SCORE_TO_WIN) {
-    MATCH_SCORE.grandWinner = 'Computer';
+  if (GAME.score.user === SCORE_TO_WIN) {
+    GAME.grandWinner = 'You';
+  } else if (GAME.score.computer === SCORE_TO_WIN) {
+    GAME.grandWinner = 'Computer';
   }
 }
 
 function displayScore() {
-  prompt(`Current Score:\n   You: ${MATCH_SCORE.user} | Computer: ${MATCH_SCORE.computer}`);
+  prompt(`Current Score:\n   You: ${GAME.score.user} | Computer: ${GAME.score.computer}`);
 }
 
 function resetScore() {
-  MATCH_SCORE.user = 0;
-  MATCH_SCORE.computer = 0;
-  MATCH_SCORE.grandWinner = null;
+  GAME.grandWinner = null;
+  GAME.score = {
+    user: 0,
+    computer: 0
+  };
 }
 
 function parseShortenedChoice(shortChoice) {
   let intendedChoice;
 
-  VALID_CHOICES.full.forEach(validChoice => {
+  GAME.validChoices.full.forEach(validChoice => {
     if (validChoice.indexOf(shortChoice) === 0) intendedChoice = validChoice;
   });
 
