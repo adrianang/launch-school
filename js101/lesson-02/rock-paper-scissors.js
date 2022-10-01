@@ -1,40 +1,25 @@
 const rlSync = require('readline-sync');
-const GAME = {
-  validChoices: {
-    full:  ['rock', 'paper', 'scissors', 'spock', 'lizard'],
-    short: ['r', 'p', 'sc', 'sp', 'l']
-  },
-  rules: {
-    rock: {
-      winsAgainst:  ['scissors', 'lizard'],
-      losesAgainst: ['paper', 'spock'],
-    },
-    paper: {
-      winsAgainst:  ['rock', 'spock'],
-      losesAgainst: ['scissors', 'lizard']
-    },
-    scissors: {
-      winsAgainst:  ['paper', 'lizard'],
-      losesAgainst: ['rock', 'spock']
-    },
-    lizard: {
-      winsAgainst:  ['spock', 'paper'],
-      losesAgainst: ['rock', 'scissors']
-    },
-    spock: {
-      winsAgainst:  ['scissors', 'rock'],
-      losesAgainst: ['lizard', 'paper']
-    }
-  },
-  score: {
-    user: 0,
-    computer: 0
-  },
-  grandWinner: null
+const VALID_CHOICES = {
+  rock:     ['rock', 'r'],
+  paper:    ['paper', 'p'],
+  scissors: ['scissors', 'sc'],
+  spock:    ['spock', 'sp'],
+  lizard:   ['lizard', 'l']
 };
+const WINNING_COMBOS = {
+  rock:     ['scissors', 'lizard'],
+  paper:    ['rock', 'spock'],
+  scissors: ['paper', 'lizard'],
+  lizard:   ['spock', 'paper'],
+  spock:    ['scissors', 'rock']
+};
+const SCOREBOARD = { user: 0, computer: 0 };
 const SCORE_TO_WIN = 3;
 const MAX_LENGTH_OF_SHORT_CHOICE =
-  GAME.validChoices.short.map(choice => choice.length).sort((a, b) => b - a)[0];
+  Object.values(VALID_CHOICES)
+    .map(choice => choice[1].length)
+    .sort((a, b) => b - a)[0];
+let grandWinner = null;
 let rematchGame = true;
 
 function prompt(message) {
@@ -62,10 +47,10 @@ function displayIntroduction() {
 }
 
 function getMoveFromUser() {
-  prompt(`Choose one: ${GAME.validChoices.full.join(', ')}`);
+  prompt(`Choose one: ${Object.keys(VALID_CHOICES).join(', ')}`);
   let choice = rlSync.question('   ').toLowerCase();
 
-  while (!Object.values(GAME.validChoices).flat().includes(choice)) {
+  while (!Object.values(VALID_CHOICES).flat().includes(choice)) {
     prompt("That's not a valid choice!");
     choice = rlSync.question('   ').toLowerCase();
   }
@@ -78,8 +63,9 @@ function getMoveFromUser() {
 }
 
 function getMoveFromComputer() {
-  let randomIndex = Math.floor(Math.random() * GAME.validChoices.full.length);
-  return GAME.validChoices.full[randomIndex];
+  let randomIndex =
+    Math.floor(Math.random() * Object.keys(VALID_CHOICES).length);
+  return Object.keys(VALID_CHOICES)[randomIndex];
 }
 
 function displayWinner(choice, computerChoice) {
@@ -98,50 +84,52 @@ function displayWinner(choice, computerChoice) {
 function determineWinner(choice, computerChoice) {
   let winner;
 
-  if (GAME.rules[choice].winsAgainst.includes(computerChoice)) {
+  if (WINNING_COMBOS[choice].includes(computerChoice)) {
     winner = 'user';
-    GAME.score.user += 1;
-  } else if (GAME.rules[choice].losesAgainst.includes(computerChoice)) {
+    SCOREBOARD.user += 1;
+  } else if (choice === computerChoice) {
+    winner = null;
+  } else {
     winner = 'computer';
-    GAME.score.computer += 1;
+    SCOREBOARD.computer += 1;
   }
 
   return winner;
 }
 
 function displayGrandWinner() {
-  if (GAME.grandWinner) {
-    prompt(`The grand winner is: ${GAME.grandWinner}! 👑`);
+  if (grandWinner) {
+    prompt(`The grand winner is: ${grandWinner}! 👑`);
     resetScore();
   }
 }
 
 function determineGrandWinner() {
-  if (GAME.score.user === SCORE_TO_WIN) {
-    GAME.grandWinner = 'You';
-  } else if (GAME.score.computer === SCORE_TO_WIN) {
-    GAME.grandWinner = 'Computer';
+  if (SCOREBOARD.user === SCORE_TO_WIN) {
+    grandWinner = 'You';
+  } else if (SCOREBOARD.computer === SCORE_TO_WIN) {
+    grandWinner = 'Computer';
   }
 }
 
 function displayScore() {
-  prompt(`Current Score:\n   You: ${GAME.score.user} | Computer: ${GAME.score.computer}`);
+  prompt(`Current Score:\n   You: ${SCOREBOARD.user} | Computer: ${SCOREBOARD.computer}`);
 }
 
 function resetScore() {
-  GAME.grandWinner = null;
-  GAME.score = {
-    user: 0,
-    computer: 0
-  };
+  grandWinner = null;
+  SCOREBOARD.user = 0;
+  SCOREBOARD.computer = 0;
 }
 
 function parseShortenedChoice(shortChoice) {
   let intendedChoice;
 
-  GAME.validChoices.full.forEach(validChoice => {
-    if (validChoice.indexOf(shortChoice) === 0) intendedChoice = validChoice;
-  });
+  for (let validChoice in VALID_CHOICES) {
+    if (VALID_CHOICES[validChoice].includes(shortChoice)) {
+      intendedChoice = validChoice;
+    }
+  }
 
   return intendedChoice;
 }
